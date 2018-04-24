@@ -9,6 +9,7 @@
 #include "glfw-wrapper.h"
 extern bool cocoa_make_window_resizable(void *w);
 extern void cocoa_create_global_menu(void);
+extern void cocoa_setup_global_hotkey(void);
 extern void cocoa_set_titlebar_color(void *w);
 
 #if GLFW_KEY_LAST >= MAX_KEY_COUNT
@@ -374,6 +375,7 @@ create_os_window(PyObject UNUSED *self, PyObject *args) {
         Py_DECREF(ret);
 #ifdef __APPLE__
         cocoa_create_global_menu();
+        cocoa_setup_global_hotkey();
         if (OPT(macos_option_as_alt)) glfwSetCocoaTextInputFilter(glfw_window, filter_option);
 #endif
         is_first_window = false;

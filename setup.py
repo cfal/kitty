@@ -249,7 +249,7 @@ def kitty_env():
     libpng = pkg_config('libpng', '--libs')
     ans.ldpaths += pylib + font_libs + gl_libs + libpng
     if is_macos:
-        ans.ldpaths.extend('-framework Cocoa'.split())
+        ans.ldpaths.extend('-framework Cocoa -framework Carbon'.split())
         if is_travis and 'SW' in os.environ:
             cflags.append('-I{}/include'.format(os.environ['SW']))
             ans.ldpaths.append('-L{}/lib'.format(os.environ['SW']))
@@ -404,7 +404,7 @@ def compile_c_extension(kenv, module, incremental, compilation_database, all_key
 def find_c_files():
     ans, headers = [], []
     d = os.path.join(base, 'kitty')
-    exclude = {'fontconfig.c', 'freetype.c', 'desktop.c'} if is_macos else {'core_text.m', 'cocoa_window.m'}
+    exclude = {'fontconfig.c', 'freetype.c', 'desktop.c'} if is_macos else {'core_text.m', 'cocoa_window.m', 'carbon_hotkey.m'}
     for x in os.listdir(d):
         ext = os.path.splitext(x)[1]
         if ext in ('.c', '.m') and os.path.basename(x) not in exclude:
