@@ -8,6 +8,7 @@ import weakref
 from collections import deque
 from enum import Enum
 
+from .child import cwd_of_process
 from .config import build_ansi_color_table, parse_send_text_bytes
 from .constants import (
     ScreenGeometry, WindowGeometry, appname, get_boss, wakeup
@@ -329,6 +330,14 @@ class Window:
             lines = h + lines
         return ''.join(lines)
 
+    @property
+    def cwd_of_child(self):
+        # TODO: Maybe use the cwd of the leader of the foreground process
+        # group in the session of the child process?
+        pid = self.child.pid
+        if pid is not None:
+            return cwd_of_process(pid) or None
+
     # actions {{{
 
     def show_scrollback(self):
@@ -348,12 +357,13 @@ class Window:
             set_clipboard_string(text)
 
     def pass_selection_to_program(self, *args):
+        cwd = self.cwd_of_child
         text = self.text_for_selection()
         if text:
             if args:
-                open_cmd(args, text)
+                open_cmd(args, text, cwd=cwd)
             else:
-                open_url(text)
+                open_url(text, cwd=cwd)
 
     def scroll_line_up(self):
         if self.screen.is_main_linebuf():
